@@ -1,5 +1,8 @@
 # Kanban Board
 
+**Live demo:** https://kanban-board-yjx2.vercel.app
+**Demo hesap:** kayıt sayfasından kendiniz açabilirsiniz, e-posta doğrulaması kapalı.
+
 Trello tarzı, basit ve hızlı görev yönetim aracı. Next.js 15 (App Router) + Supabase (Postgres + Auth) + dnd-kit + shadcn/ui ile yazıldı.
 
 ## Mimari Kararlar
