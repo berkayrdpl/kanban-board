@@ -28,7 +28,7 @@ export default async function BoardDetailPage({
 
   const { data: board, error: boardErr } = await supabase
     .from("boards")
-    .select("id, title, owner_id")
+    .select("id, title, owner_id, share_token")
     .eq("id", id)
     .maybeSingle();
 
@@ -58,7 +58,11 @@ export default async function BoardDetailPage({
 
   return (
     <main className="flex h-screen flex-col p-4 sm:p-6">
-      <BoardHeader id={board.id} title={board.title} />
+      <BoardHeader
+        id={board.id}
+        title={board.title}
+        shareToken={board.share_token ?? null}
+      />
       <BoardView boardId={board.id} initialColumns={columns} />
     </main>
   );

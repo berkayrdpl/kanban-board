@@ -2,20 +2,26 @@
 
 import Link from "next/link";
 import { useState, useTransition } from "react";
-import { ArrowLeft, Pencil, Trash2, Check, X } from "lucide-react";
+import { ArrowLeft, Pencil, Trash2, Check, X, Share2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
   deleteBoardAction,
   renameBoardAction,
 } from "@/app/boards/actions";
+import { ShareDialog } from "./share-dialog";
 
-type Props = { id: string; title: string };
+type Props = {
+  id: string;
+  title: string;
+  shareToken: string | null;
+};
 
-export function BoardHeader({ id, title }: Props) {
+export function BoardHeader({ id, title, shareToken }: Props) {
   const [isEditing, setIsEditing] = useState(false);
   const [draft, setDraft] = useState(title);
   const [isPending, startTransition] = useTransition();
+  const [shareOpen, setShareOpen] = useState(false);
 
   function save(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -96,6 +102,24 @@ export function BoardHeader({ id, title }: Props) {
           <h1 className="flex-1 truncate text-xl font-semibold tracking-tight">
             {title}
           </h1>
+          {shareToken ? (
+            <span
+              className="hidden rounded-full bg-emerald-500/10 px-2 py-0.5 text-xs font-medium text-emerald-700 sm:inline"
+              title="Bu board public link ile paylaşılıyor"
+            >
+              Paylaşılıyor
+            </span>
+          ) : null}
+          <Button
+            type="button"
+            size="icon"
+            variant="ghost"
+            className="h-9 w-9"
+            onClick={() => setShareOpen(true)}
+            aria-label="Paylaş"
+          >
+            <Share2 className="h-4 w-4" />
+          </Button>
           <Button
             type="button"
             size="icon"
@@ -119,6 +143,12 @@ export function BoardHeader({ id, title }: Props) {
           </Button>
         </>
       )}
+      <ShareDialog
+        boardId={id}
+        initialToken={shareToken}
+        open={shareOpen}
+        onOpenChange={setShareOpen}
+      />
     </header>
   );
 }

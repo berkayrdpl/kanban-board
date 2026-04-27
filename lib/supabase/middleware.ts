@@ -17,6 +17,7 @@ const PUBLIC_PREFIXES = [
   "/login",
   "/signup",
   "/auth/",
+  "/share/", // public read-only board view via token
   "/_next",
   "/favicon",
 ];

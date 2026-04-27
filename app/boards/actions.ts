@@ -57,3 +57,42 @@ export async function deleteBoardAction(formData: FormData) {
   revalidatePath("/boards");
   redirect("/boards");
 }
+
+/**
+ * Toggle public sharing for a board.
+ *   - If `share_token` is null → generate a new uuid and store it.
+ *   - If non-null → clear it (revoke).
+ *
+ * Returns the new token (or null after revoke). Token is unguessable (UUID v4),
+ * so anyone with the URL can read the board; no one without it can.
+ */
+export async function toggleBoardShareAction(
+  boardId: string,
+): Promise<{ token: string | null; error?: string }> {
+  if (!boardId) return { token: null, error: "Board id eksik." };
+
+  const supabase = await createClient();
+
+  // Read current token (RLS scopes this to the owner)
+  const { data: current, error: readErr } = await supabase
+    .from("boards")
+    .select("share_token")
+    .eq("id", boardId)
+    .single();
+
+  if (readErr) return { token: null, error: readErr.message };
+
+  const next = current?.share_token
+    ? null
+    : crypto.randomUUID();
+
+  const { error: writeErr } = await supabase
+    .from("boards")
+    .update({ share_token: next })
+    .eq("id", boardId);
+
+  if (writeErr) return { token: null, error: writeErr.message };
+
+  revalidatePath(`/boards/${boardId}`);
+  return { token: next };
+}
